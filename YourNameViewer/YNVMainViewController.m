@@ -82,6 +82,7 @@ static NSString *const cellIdentifier = @"mainListCell";
 
 - (void)addGalleryList {
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+        [self.view makeToastActivity:CSToastPositionCenter];
         
         NSURL *mainURL = [NSURL URLWithString:[GALLERY_MAIN_LIST_URL stringByAppendingFormat:@"&page=%ld", self.pageIndex]];
         NSData *mainHTMLData = [NSData dataWithContentsOfURL:mainURL];
@@ -127,6 +128,7 @@ static NSString *const cellIdentifier = @"mainListCell";
         
         [self.dataArray addObject:tempDataArray];
         
+        [self.view hideToastActivity];
         [self.tableSpinner stopAnimating];
         [self.refreshControl endRefreshing];
         [self.tableView reloadData];

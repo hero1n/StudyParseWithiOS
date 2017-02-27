@@ -7,5 +7,6 @@ target 'YourNameViewer' do
 
   # Pods for YourNameViewer
 	pod 'hpple'
+	pod 'Toast'
 
 end
