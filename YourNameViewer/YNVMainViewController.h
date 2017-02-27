@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  YNVMainViewController
 //  YourNameViewer
 //
 //  Created by 노재원 on 2017. 2. 27..
@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface YNVMainViewController : UIViewController
-
 
 @end
 

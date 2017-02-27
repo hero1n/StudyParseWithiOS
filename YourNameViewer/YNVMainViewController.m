@@ -1,5 +1,5 @@
 //
-//  ViewController.m
+//  YNVMainViewController
 //  YourNameViewer
 //
 //  Created by 노재원 on 2017. 2. 27..
@@ -17,9 +17,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    
-    
 }
-
 
 @end
