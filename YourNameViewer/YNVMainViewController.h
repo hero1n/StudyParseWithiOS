@@ -8,7 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface YNVMainViewController : UIViewController
+@interface YNVMainViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
 
 @end
 
