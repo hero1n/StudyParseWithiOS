@@ -12,23 +12,13 @@
 // Libraries
 #import "TFHpple.h"
 
+// Models
+#import "YNVListData.h"
+
 // Cell
 #import "YNVMainListCell.h"
 
 static NSString *const cellIdentifier = @"mainListCell";
-
-@interface YNVListData : NSObject
-
-@property (strong, nonatomic, nullable) NSString *title;
-@property (strong, nonatomic, nullable) NSString *userName;
-@property (strong, nonatomic, nullable) NSString *postDateString;
-@property (strong, nonatomic, nullable) NSString *postLink;
-
-@end
-
-@implementation YNVListData
-
-@end
 
 @interface YNVMainViewController ()
 
