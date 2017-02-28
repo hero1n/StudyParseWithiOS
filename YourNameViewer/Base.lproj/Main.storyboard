@@ -97,10 +97,10 @@
             </objects>
             <point key="canvasLocation" x="381.60000000000002" y="169.56521739130437"/>
         </scene>
-        <!--View Controller-->
+        <!--Detail View Controller-->
         <scene sceneID="jSl-ZU-fcs">
             <objects>
-                <viewController storyboardIdentifier="YNVDetailViewController" id="u7H-wd-Z0Y" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="YNVDetailViewController" id="u7H-wd-Z0Y" customClass="YNVDetailViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="WTN-gb-dJj"/>
                         <viewControllerLayoutGuide type="bottom" id="FXg-mt-Fba"/>
@@ -108,12 +108,30 @@
                     <view key="view" contentMode="scaleToFill" id="2Je-V9-6F8">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="()" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="wXM-Rw-rwg">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                <dataDetectorType key="dataDetectorTypes" link="YES"/>
+                            </textView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="FXg-mt-Fba" firstAttribute="top" secondItem="wXM-Rw-rwg" secondAttribute="bottom" id="FXu-Ui-UJj"/>
+                            <constraint firstItem="wXM-Rw-rwg" firstAttribute="top" secondItem="2Je-V9-6F8" secondAttribute="top" id="U9I-Pu-pgS"/>
+                            <constraint firstAttribute="trailing" secondItem="wXM-Rw-rwg" secondAttribute="trailing" id="kJw-hN-kzI"/>
+                            <constraint firstItem="wXM-Rw-rwg" firstAttribute="leading" secondItem="2Je-V9-6F8" secondAttribute="leading" id="msh-tj-Q8b"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="textView" destination="wXM-Rw-rwg" id="g6K-jJ-EnI"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ejk-1d-lP1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1074" y="170"/>
+            <point key="canvasLocation" x="1072.8" y="169.56521739130437"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="oJI-yX-XHM">
