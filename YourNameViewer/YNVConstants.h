@@ -16,7 +16,8 @@
 #define NSLog( s, ... )
 #endif
 
-#define GALLERY_MAIN_LIST_URL @"http://gall.dcinside.com/board/lists?id=yourname"
+#define GALLERY_END_POINT @"http://gall.dcinside.com"
+#define GALLERY_MAIN_LIST_URL [GALLERY_END_POINT stringByAppendingString:@"/board/lists?id=yourname"]
 
 #endif /* YNVConstant_h */
 
