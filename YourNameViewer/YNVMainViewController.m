@@ -181,8 +181,7 @@ static NSString *const cellIdentifier = @"mainListCell";
     YNVListData *listData = self.dataArray[indexPath.section][indexPath.row];
     
     YNVDetailViewController *detailViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"YNVDetailViewController"];
-    detailViewController.titleString = listData.title;
-    detailViewController.postLinkString = listData.postLink;
+    detailViewController.listData = listData;
     
     [self.navigationController pushViewController:detailViewController animated:YES];
 }

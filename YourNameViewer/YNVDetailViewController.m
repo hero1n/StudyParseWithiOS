@@ -25,13 +25,13 @@
 
 - (void)getPost {
     [self.view makeToastActivity:CSToastPositionCenter];
-    NSMutableString *contentString = self.titleString.mutableCopy;
+    NSMutableString *contentString = self.listData.title.mutableCopy;
     [contentString appendString:@"\n\n"];
     
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         NSString *XPathQuery = @"//*[@id='dgn_content_de']/div[2]/div[1]/div";
         //*[@id="dgn_content_de"]/div[2]/div[1]/div/table/tbody/tr
-        NSString *postURLString = [GALLERY_END_POINT stringByAppendingString:self.postLinkString];
+        NSString *postURLString = [GALLERY_END_POINT stringByAppendingString:self.listData.postLink];
         NSURL *postURL = [NSURL URLWithString:postURLString];
         NSData *postHTMLData = [NSData dataWithContentsOfURL:postURL];
         
@@ -47,7 +47,7 @@
         NSMutableArray<NSTextAttachment *> *attachmentArray = [NSMutableArray array];
         
         for (TFHppleElement *element in tdElement.children) {
-            NSLog(@"<<<<<< %@ <> %@ <> %@ >>>>>>>", element.text, element.tagName, element.attributes);
+            NSLog(@"<<<<<< %@ <> %@ <> %@ <> %@ >>>>>>>", element.text, element.tagName, element.attributes, element.children);
             
             if (element.text.length > 0) {
                 [contentString appendString:element.text];
@@ -71,7 +71,7 @@
         
         
         [contentAttributedString addAttributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:15.0f]}
-                                         range:[contentString rangeOfString:self.titleString]];
+                                         range:[contentString rangeOfString:self.listData.title]];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.view hideToastActivity];

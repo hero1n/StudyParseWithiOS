@@ -7,11 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "YNVListData.h"
 
 @interface YNVDetailViewController : UIViewController
 
-@property (strong, nonatomic) NSString *titleString;
-@property (strong, nonatomic) NSString *postLinkString;
+@property (strong, nonatomic) YNVListData *listData;
 
 @property (strong, nonatomic) IBOutlet UITextView *textView;
 
