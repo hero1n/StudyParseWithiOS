@@ -16,7 +16,3 @@
 @property (strong, nonatomic, nullable) NSString *postLink;
 
 @end
-
-@implementation YNVListData
-
-@end
