@@ -10,6 +10,9 @@
 
 @interface YNVDetailViewController : UIViewController
 
-@property (strong, nonatomic, nonnull) NSString *postLinkString;
+@property (strong, nonatomic) NSString *titleString;
+@property (strong, nonatomic) NSString *postLinkString;
+
+@property (strong, nonatomic) IBOutlet UITextView *textView;
 
 @end
