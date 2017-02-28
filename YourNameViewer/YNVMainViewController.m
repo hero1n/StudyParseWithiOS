@@ -59,6 +59,8 @@ static NSString *const cellIdentifier = @"mainListCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
     self.tableView.estimatedRowHeight = 70.0f;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     
@@ -126,7 +128,7 @@ static NSString *const cellIdentifier = @"mainListCell";
                 }
             }
             
-            if (data.title.length != 0) {
+            if (data.title.length != 0 && ![data.userName isEqualToString:@"새초미♡"]) {
                 [tempDataArray addObject:data];
             }
         }
@@ -189,7 +191,10 @@ static NSString *const cellIdentifier = @"mainListCell";
     YNVListData *listData = self.dataArray[indexPath.section][indexPath.row];
     
     YNVDetailViewController *detailViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"YNVDetailViewController"];
+    detailViewController.titleString = listData.title;
     detailViewController.postLinkString = listData.postLink;
+    
+    [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
 @end
