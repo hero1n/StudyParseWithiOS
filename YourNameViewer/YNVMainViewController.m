@@ -7,6 +7,7 @@
 //
 
 #import "YNVMainViewController.h"
+#import "YNVDetailViewController.h"
 
 // Libraries
 #import "TFHpple.h"
@@ -37,6 +38,7 @@ static NSString *const cellIdentifier = @"mainListCell";
 @property (strong, nonatomic, nonnull) UIActivityIndicatorView *tableSpinner;
 
 @property NSInteger pageIndex;
+@property Boolean isLoading;
 
 @end
 
@@ -48,6 +50,7 @@ static NSString *const cellIdentifier = @"mainListCell";
     if (self) {
         self.dataArray = [NSMutableArray array];
         self.pageIndex = 1;
+        self.isLoading = NO;
     }
     
     return self;
@@ -82,6 +85,7 @@ static NSString *const cellIdentifier = @"mainListCell";
 
 - (void)addGalleryList {
     [self.view makeToastActivity:CSToastPositionCenter];
+    self.isLoading = YES;
     
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         NSURL *mainURL = [NSURL URLWithString:[GALLERY_MAIN_LIST_URL stringByAppendingFormat:@"&page=%ld", self.pageIndex]];
@@ -107,11 +111,12 @@ static NSString *const cellIdentifier = @"mainListCell";
                 NSLog(@"<<<<<< %@ <> %@ <> %@ >>>>>>>", childrenElement.content, childrenElement.tagName, childrenElement.attributes);
                 
                 if ([childrenElement.attributes[@"class"] isEqual:@"t_subject"]) {
-                    NSString *hrefLinkString = childrenElement.firstChild.attributes[@"href"];
-                    NSLog(@"%@", hrefLinkString);
+                    NSString *hrefLinkString = [childrenElement firstChildWithTagName:@"a"].attributes[@"href"];
+                    data.postLink = hrefLinkString;
                     
                     NSLog(@"hihi: %@", childrenElement.raw);
                     data.title = childrenElement.firstChild.text;
+                    
                 } else if ([childrenElement.attributes[@"class"] isEqual:@"t_writer user_layer"]) {
                     NSString *userName = childrenElement.attributes[@"user_name"];
                     
@@ -129,6 +134,7 @@ static NSString *const cellIdentifier = @"mainListCell";
         [self.dataArray addObject:tempDataArray];
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            self.isLoading = NO;
             [self.view hideToastActivity];
             [self.tableSpinner stopAnimating];
             [self.refreshControl endRefreshing];
@@ -152,6 +158,10 @@ static NSString *const cellIdentifier = @"mainListCell";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.isLoading == YES) {
+        return [[UITableViewCell alloc] initWithFrame:CGRectZero];
+    }
+    
     YNVMainListCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     YNVListData *listData = self.dataArray[indexPath.section][indexPath.row];
     
@@ -176,6 +186,10 @@ static NSString *const cellIdentifier = @"mainListCell";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    YNVListData *listData = self.dataArray[indexPath.section][indexPath.row];
+    
+    YNVDetailViewController *detailViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"YNVDetailViewController"];
+    detailViewController.postLinkString = listData.postLink;
 }
 
 @end
