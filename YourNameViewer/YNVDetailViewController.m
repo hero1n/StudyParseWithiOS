@@ -23,6 +23,8 @@
 
 @interface YNVDetailViewController ()
 
+@property (strong, nonatomic) UIRefreshControl *refreshControl;
+
 @end
 
 @implementation YNVDetailViewController
@@ -30,21 +32,21 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-    [refreshControl addTarget:self
-                            action:@selector(refresh:)
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl addTarget:self
+                            action:@selector(refresh)
                   forControlEvents:UIControlEventValueChanged];
-    [self.textView addSubview:refreshControl];
+    [self.textView addSubview:self.refreshControl];
     self.textView.scrollEnabled = YES;
     
     [self getPost];
 }
 
-- (void)refresh:(UIRefreshControl *)refreshControl {
+- (void)refresh {
     self.textView.text = @"";
     
     [self getPost];
-    [refreshControl endRefreshing];
+    [self.refreshControl endRefreshing];
 }
 
 - (void)getPost {
@@ -85,15 +87,13 @@
             NSString *srcString = [[element firstChildWithTagName:@"a"] firstChildWithTagName:@"img"].attributes[@"src"];
             
             if (srcString.length > 0) {
-                NSURL *imageURL = [NSURL URLWithString:srcString];
-                NSData *imageData = [[NSData alloc] initWithContentsOfURL:imageURL];
-                UIImage *image = [UIImage imageWithData:imageData];
-                
-                YNVImageTextAttachment *textAttachment = [[YNVImageTextAttachment alloc] init];
-                textAttachment.image = [self imageWithImage:image scaledToWidth:self.view.frame.size.width];
-                textAttachment.imageURLString = srcString;
-                
-                [contentString appendAttributedString:[NSMutableAttributedString attributedStringWithAttachment:textAttachment]];
+                [contentString appendAttributedString:[NSMutableAttributedString attributedStringWithAttachment:[self textAttachmentWithImageURL:srcString]]];
+            }
+        } else if ([element firstChildWithTagName:@"img"] != nil) {
+            NSString *srcString = [element firstChildWithTagName:@"img"].attributes[@"src"];
+            
+            if (srcString.length > 0) {
+                [contentString appendAttributedString:[NSMutableAttributedString attributedStringWithAttachment:[self textAttachmentWithImageURL:srcString]]];
             }
         }
         
@@ -128,15 +128,47 @@
                 NSString *srcString = ((TFHppleElement *)element.children.firstObject).attributes[@"src"];
                 
                 if (srcString.length > 0) {
-                    NSURL *imageURL = [NSURL URLWithString:srcString];
-                    NSData *imageData = [[NSData alloc] initWithContentsOfURL:imageURL];
-                    UIImage *image = [UIImage imageWithData:imageData];
-                    
-                    YNVImageTextAttachment *textAttachment = [[YNVImageTextAttachment alloc] init];
-                    textAttachment.image = [self imageWithImage:image scaledToWidth:self.view.frame.size.width];
-                    textAttachment.imageURLString = srcString;
-                    
-                    [contentString appendAttributedString:[NSMutableAttributedString attributedStringWithAttachment:textAttachment]];
+                    [contentString appendAttributedString:[NSMutableAttributedString attributedStringWithAttachment:[self textAttachmentWithImageURL:srcString]]];
+                }
+            } else if ([element.tagName isEqualToString:@"img"]) {
+                NSString *srcString = element.attributes[@"src"];
+                
+                if (srcString.length > 0) {
+                    [contentString appendAttributedString:[NSMutableAttributedString attributedStringWithAttachment:[self textAttachmentWithImageURL:srcString]]];
+                }
+            } else if (element.hasChildren) {
+                for (TFHppleElement *child in element.children) {
+                    if (child.content != nil) {
+                        [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:child.content]];
+                    }
+                    if ([child.children count]!= 0) {
+                        for (TFHppleElement *grandchild in child.children) {
+                            if (grandchild.content != nil) {
+                                [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:grandchild.content]];
+                            }
+                            for (TFHppleElement *greatgrandchild in grandchild.children) {
+                                if (greatgrandchild.content != nil) {
+                                    [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:greatgrandchild.content]];
+                                }
+                                for (TFHppleElement *greatgreatgrandchild in greatgrandchild.children) {
+                                    if (greatgreatgrandchild.text != nil) {
+                                        [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:greatgreatgrandchild.text]];
+                                    }
+                                    if (greatgreatgrandchild.content != nil) {
+                                        [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:greatgreatgrandchild.content]];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if ([element.tagName isEqualToString:@"a"]) {
+                [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:element.attributes[@"href"]]];
+            } else if ([element.tagName isEqualToString:@"span"]) {
+                if (element.text.length > 0) {
+                    [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:element.text]];
+                } else if (element.content.length > 0) {
+                    [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:element.content]];
                 }
             }
         }
@@ -150,9 +182,21 @@
     });
 }
 
-- (UIImage*)imageWithImage:(UIImage*)sourceImage scaledToWidth:(float)i_width {
+- (YNVImageTextAttachment *)textAttachmentWithImageURL:(NSString *)imageSrc {
+    NSURL *imageURL = [NSURL URLWithString:imageSrc];
+    NSData *imageData = [[NSData alloc] initWithContentsOfURL:imageURL];
+    UIImage *image = [UIImage imageWithData:imageData];
+    
+    YNVImageTextAttachment *textAttachment = [[YNVImageTextAttachment alloc] init];
+    textAttachment.image = [self imageWithImage:image scaledToWidth:self.view.frame.size.width];
+    textAttachment.imageURLString = imageSrc;
+    
+    return textAttachment;
+}
+
+- (UIImage *)imageWithImage:(UIImage*)sourceImage scaledToWidth:(float)scaleWidth {
     float oldWidth = sourceImage.size.width;
-    float scaleFactor = i_width / oldWidth;
+    float scaleFactor = scaleWidth / oldWidth;
     
     float newHeight = sourceImage.size.height * scaleFactor;
     float newWidth = oldWidth * scaleFactor;
