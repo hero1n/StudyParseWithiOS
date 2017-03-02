@@ -30,7 +30,21 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self
+                            action:@selector(refresh:)
+                  forControlEvents:UIControlEventValueChanged];
+    [self.textView addSubview:refreshControl];
+    self.textView.scrollEnabled = YES;
+    
     [self getPost];
+}
+
+- (void)refresh:(UIRefreshControl *)refreshControl {
+    self.textView.text = @"";
+    
+    [self getPost];
+    [refreshControl endRefreshing];
 }
 
 - (void)getPost {
