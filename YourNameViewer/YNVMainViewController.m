@@ -106,9 +106,18 @@ static NSString *const cellIdentifier = @"mainListCell";
                     NSString *hrefLinkString = [childrenElement firstChildWithTagName:@"a"].attributes[@"href"];
                     data.postLink = hrefLinkString;
                     
+                    for (TFHppleElement *aTagElement in childrenElement.children) {
+                        if ([aTagElement.tagName isEqualToString:@"a"]) {
+                            NSString *tempHrefString = aTagElement.attributes[@"href"];
+
+                            if (tempHrefString.length > 0 && [tempHrefString containsString:@"comment"]) {
+                                data.comments = aTagElement.firstChild.firstChild.content;
+                            }
+                        }
+                    }
+                    
                     NSLog(@"hihi: %@", childrenElement.raw);
                     data.title = childrenElement.firstChild.text;
-                    
                 } else if ([childrenElement.attributes[@"class"] isEqual:@"t_writer user_layer"]) {
                     NSString *userName = childrenElement.attributes[@"user_name"];
                     
@@ -158,6 +167,7 @@ static NSString *const cellIdentifier = @"mainListCell";
     YNVListData *listData = self.dataArray[indexPath.section][indexPath.row];
     
     cell.titleLabel.text = listData.title;
+    cell.commentLabel.text = listData.comments;
     cell.userNameLabel.text = listData.userName;
     cell.postDateLabel.text = listData.postDateString;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;

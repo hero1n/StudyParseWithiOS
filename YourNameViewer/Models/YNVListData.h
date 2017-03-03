@@ -14,5 +14,6 @@
 @property (strong, nonatomic, nullable) NSString *userName;
 @property (strong, nonatomic, nullable) NSString *postDateString;
 @property (strong, nonatomic, nullable) NSString *postLink;
+@property (strong, nonatomic, nullable) NSString *comments;
 
 @end

@@ -11,6 +11,7 @@
 @interface YNVMainListCell : UITableViewCell
 
 @property (strong, nonatomic) IBOutlet UILabel *titleLabel;
+@property (strong, nonatomic) IBOutlet UILabel *commentLabel;
 @property (strong, nonatomic) IBOutlet UILabel *userNameLabel;
 @property (strong, nonatomic) IBOutlet UILabel *postDateLabel;
 
