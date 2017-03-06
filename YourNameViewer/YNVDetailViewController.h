@@ -13,6 +13,8 @@
 
 @property (strong, nonatomic) YNVListData *listData;
 
+@property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (strong, nonatomic) IBOutlet UITextView *textView;
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
 
 @end

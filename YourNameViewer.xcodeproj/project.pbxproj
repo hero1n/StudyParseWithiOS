@@ -16,6 +16,7 @@
 		5E61389C1E6411CB002BD351 /* YNVMainListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E61389B1E6411CB002BD351 /* YNVMainListCell.m */; };
 		5E61389F1E642FFF002BD351 /* YNVDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E61389E1E642FFF002BD351 /* YNVDetailViewController.m */; };
 		5E6138A21E658726002BD351 /* YNVListData.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E6138A11E658725002BD351 /* YNVListData.m */; };
+		5EF182491E69649F001B1020 /* YNVDetailCommentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EF182481E69649F001B1020 /* YNVDetailCommentCell.m */; };
 		EDB76B81C200C8A34AC4656D /* libPods-YourNameViewer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4D333C3CD78856FA4D0C124 /* libPods-YourNameViewer.a */; };
 /* End PBXBuildFile section */
 
@@ -40,6 +41,8 @@
 		5E61389E1E642FFF002BD351 /* YNVDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YNVDetailViewController.m; sourceTree = "<group>"; };
 		5E6138A01E658725002BD351 /* YNVListData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YNVListData.h; path = Models/YNVListData.h; sourceTree = "<group>"; };
 		5E6138A11E658725002BD351 /* YNVListData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YNVListData.m; path = Models/YNVListData.m; sourceTree = "<group>"; };
+		5EF182471E69649F001B1020 /* YNVDetailCommentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YNVDetailCommentCell.h; path = Cell/YNVDetailCommentCell.h; sourceTree = "<group>"; };
+		5EF182481E69649F001B1020 /* YNVDetailCommentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YNVDetailCommentCell.m; path = Cell/YNVDetailCommentCell.m; sourceTree = "<group>"; };
 		C4D333C3CD78856FA4D0C124 /* libPods-YourNameViewer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-YourNameViewer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -87,10 +90,10 @@
 			children = (
 				5E6138831E63BF1B002BD351 /* YNVAppDelegate.h */,
 				5E6138841E63BF1B002BD351 /* YNVAppDelegate.m */,
-				5E6138861E63BF1B002BD351 /* YNVMainViewController.h */,
-				5E6138871E63BF1B002BD351 /* YNVMainViewController.m */,
 				5E61389D1E642FFF002BD351 /* YNVDetailViewController.h */,
 				5E61389E1E642FFF002BD351 /* YNVDetailViewController.m */,
+				5E6138861E63BF1B002BD351 /* YNVMainViewController.h */,
+				5E6138871E63BF1B002BD351 /* YNVMainViewController.m */,
 				5E6138891E63BF1C002BD351 /* Main.storyboard */,
 				5E61388C1E63BF1C002BD351 /* Assets.xcassets */,
 				5E61388E1E63BF1C002BD351 /* LaunchScreen.storyboard */,
@@ -115,6 +118,8 @@
 		5E6138991E641008002BD351 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				5EF182471E69649F001B1020 /* YNVDetailCommentCell.h */,
+				5EF182481E69649F001B1020 /* YNVDetailCommentCell.m */,
 				5E61389A1E6411CB002BD351 /* YNVMainListCell.h */,
 				5E61389B1E6411CB002BD351 /* YNVMainListCell.m */,
 			);
@@ -262,6 +267,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5E6138881E63BF1B002BD351 /* YNVMainViewController.m in Sources */,
+				5EF182491E69649F001B1020 /* YNVDetailCommentCell.m in Sources */,
 				5E61389F1E642FFF002BD351 /* YNVDetailViewController.m in Sources */,
 				5E6138851E63BF1B002BD351 /* YNVAppDelegate.m in Sources */,
 				5E61389C1E6411CB002BD351 /* YNVMainListCell.m in Sources */,
