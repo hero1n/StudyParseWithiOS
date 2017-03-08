@@ -8,5 +8,4 @@ target 'YourNameViewer' do
   # Pods for YourNameViewer
 	pod 'hpple'
 	pod 'Toast'
-	pod 'IGHTMLQuery', '~> 0.8.4'
 end

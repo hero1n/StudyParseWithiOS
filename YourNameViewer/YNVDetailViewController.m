@@ -10,7 +10,6 @@
 
 // Libraries
 #import "TFHpple.h"
-#import "IGHTMLQuery.h"
 
 // Cell
 #import "YNVDetailCommentCell.h"
@@ -66,52 +65,113 @@ static NSString *const cellIdentifier = @"detailCommentCell";
     self.tableView.dataSource = self;
     self.tableView.hidden = YES;
     
-    [self getPostWithIGHTML];
-    [self getPost];
+    [self getPostHtml];
+//    [self getPost];
 }
 
 - (void)refresh {
     self.textView.text = @"";
-    
-    [self getPostWithIGHTML];
-    [self getPost];
+
+    [self getPostHtml];
     [self.refreshControl endRefreshing];
 }
 
-- (void)getPostWithIGHTML {
+- (void)getPostHtml {
     [self.view makeToastActivity:CSToastPositionCenter];
-    NSMutableAttributedString *contentString = [[NSMutableAttributedString alloc]
-                                                initWithString:[self.listData.title stringByAppendingString:@"\n"]
-                                                attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:15.0f]}
-                                                ];
-    
-    [contentString appendAttributedString:[[NSMutableAttributedString alloc]
-                                           initWithString:[self.listData.userName stringByAppendingString:@"    "]
-                                           attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14.0f],
-                                                        NSForegroundColorAttributeName : [UIColor lightGrayColor]}
-                                           ]];
-    
-    [contentString appendAttributedString:[[NSMutableAttributedString alloc]
-                                           initWithString:self.listData.postDateString
-                                           attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14.0f],
-                                                        NSForegroundColorAttributeName : [UIColor lightGrayColor]}
-                                           ]];
-    
-    [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n\n"]];
     
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+        NSString *XPathQuery = @"//*[@id='dgn_content_de']/div[2]/div[1]/div";
         NSString *postURLString = [GALLERY_END_POINT stringByAppendingString:self.listData.postLink];
-        IGHTMLDocument *document = [[IGHTMLDocument alloc] initWithHTMLString:postURLString error:nil];
-        NSString *XPathQuery = @"//*[@id='dgn_content_de']";
+        NSURL *postURL = [NSURL URLWithString:postURLString];
+        NSData *postHTMLData = [NSData dataWithContentsOfURL:postURL];
         
-        IGXMLNodeSet *contents = [document queryWithXPath:XPathQuery];
-        [contents enumerateNodesUsingBlock:^(IGXMLNode* content, NSUInteger idx, BOOL *stop){
-            NSLog(@"fsd %@", content.xml);
-        }];
+        TFHpple *postParser = [TFHpple hppleWithHTMLData:postHTMLData];
+        NSArray<TFHppleElement *> *parsedArray = [postParser searchWithXPathQuery:XPathQuery];
+        
+        NSMutableAttributedString *contentString = [[NSMutableAttributedString alloc]
+                                                    initWithString:[self.listData.title stringByAppendingString:@"\n"]
+                                                    attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:15.0f]}
+                                                    ];
+        
+        [contentString appendAttributedString:[[NSMutableAttributedString alloc]
+                                               initWithString:[self.listData.userName stringByAppendingString:@"    "]
+                                               attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14.0f],
+                                                            NSForegroundColorAttributeName : [UIColor lightGrayColor]}
+                                               ]];
+        
+        [contentString appendAttributedString:[[NSMutableAttributedString alloc]
+                                               initWithString:self.listData.postDateString
+                                               attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14.0f],
+                                                            NSForegroundColorAttributeName : [UIColor lightGrayColor]}
+                                               ]];
+        
+        [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n\n"]];
+        
+        TFHppleElement *element = parsedArray.firstObject;
+        NSLog(@"<<<<<< %@ <> %@ <> %@ <> %@ >>>>>>>", element.text, element.tagName, element.attributes, element.children);
+        
+        if ([element firstChildWithTagName:@"a"] != nil) {
+            NSString *srcString = [[element firstChildWithTagName:@"a"] firstChildWithTagName:@"img"].attributes[@"src"];
+            
+            if (srcString.length > 0) {
+                [contentString appendAttributedString:[NSMutableAttributedString attributedStringWithAttachment:[self textAttachmentWithImageURL:srcString]]];
+            }
+        } else if ([element firstChildWithTagName:@"img"] != nil) {
+            NSString *srcString = [element firstChildWithTagName:@"img"].attributes[@"src"];
+            
+            if (srcString.length > 0) {
+                [contentString appendAttributedString:[NSMutableAttributedString attributedStringWithAttachment:[self textAttachmentWithImageURL:srcString]]];
+            }
+        }
+        
+        TFHppleElement *tdElement = [[[parsedArray.firstObject firstChildWithTagName:@"table"] firstChildWithTagName:@"tr"] firstChildWithTagName:@"td"];
+        NSLog(@"<<<<<< %@ <> %@ <> %@ <> %@ >>>>>>>", tdElement.text, tdElement.tagName, tdElement.attributes, tdElement.children);
+//
+        for (TFHppleElement *element in tdElement.children) {
+            if ([element hasChildren]) {
+                for (TFHppleElement *childElement in element.children) {
+                    if ([childElement hasChildren]) {
+                        for (TFHppleElement *childChildElement in childElement.children) {
+                            if (![childChildElement hasChildren] && childChildElement.raw.length > 0) {
+                                [contentString appendAttributedString:[[NSAttributedString alloc] initWithData:[childChildElement.raw dataUsingEncoding:NSUTF8StringEncoding]
+                                                                                                       options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType,
+                                                                                                                 NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)}
+                                                                                            documentAttributes:nil
+                                                                                                         error:nil]];
+                            }
+                        }
+                    } else {
+                        if (childElement.raw.length > 0) {
+                        [contentString appendAttributedString:[[NSAttributedString alloc] initWithData:[childElement.raw dataUsingEncoding:NSUTF8StringEncoding]
+                                                                                               options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType,
+                                                                                                         NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)}
+                                                                                    documentAttributes:nil
+                                                                                                 error:nil]];
+                        }
+                    }
+                }
+            } else {
+                if (element.raw.length > 0) {
+                [contentString appendAttributedString:[[NSAttributedString alloc] initWithData:[element.raw dataUsingEncoding:NSUTF8StringEncoding]
+                                                                                       options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType,
+                                                                                                 NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)}
+                                                                            documentAttributes:nil
+                                                                                         error:nil]];
+                }
+            }
+        }
+        
+        [contentString appendAttributedString:[[NSAttributedString alloc] initWithData:[parsedArray.firstObject.raw dataUsingEncoding:NSUTF8StringEncoding]
+                                                                               options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType,
+                                                                                         NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)}
+                                                                    documentAttributes:nil
+                                                                                 error:nil]];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.view hideToastActivity];
             self.textView.attributedText = contentString;
+            
+            [self.view hideToastActivity];
+            //            [self getComments];
         });
     });
 }
