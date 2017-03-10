@@ -11,6 +11,7 @@
 // Libraries
 #import "TFHpple.h"
 #import "IGHTMLQuery.h"
+#import "HTMLReader.h"
 
 // Cell
 #import "YNVDetailCommentCell.h"
@@ -66,7 +67,6 @@ static NSString *const cellIdentifier = @"detailCommentCell";
     self.tableView.dataSource = self;
     self.tableView.hidden = YES;
     
-    [self getPostWithOtherLibraryThatNameIsIGHTMLQuery];
 //    [self getPostHtml];
 //    [self getPost];
 }
@@ -76,7 +76,12 @@ static NSString *const cellIdentifier = @"detailCommentCell";
 
     [self getPostWithOtherLibraryThatNameIsIGHTMLQuery];
 //    [self getPostHtml];
+//    [self getPost];
     [self.refreshControl endRefreshing];
+}
+
+- (void)viewDidLayoutSubviews {
+    [self getPostWithOtherLibraryThatNameIsIGHTMLQuery];
 }
 
 - (void)getPostWithOtherLibraryThatNameIsIGHTMLQuery {
@@ -115,29 +120,33 @@ static NSString *const cellIdentifier = @"detailCommentCell";
         
         IGXMLNode *element = [node queryWithXPath:XPathQuery].firstObject;
         
-        [contentString appendAttributedString:[[NSAttributedString alloc] initWithData:[element.innerHtml dataUsingEncoding:NSUTF8StringEncoding]
+        HTMLDocument *document = [HTMLDocument documentWithString:element.html];
+        
+        NSLog(@"%@", document.bodyElement.innerHTML);
+        
+        [contentString appendAttributedString:[[NSAttributedString alloc] initWithData:[document.bodyElement.innerHTML dataUsingEncoding:NSUTF8StringEncoding]
                                                                                options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType,
                                                                                          NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)}
                                                                     documentAttributes:nil
                                                                                  error:nil]];
         
-        [contentString appendAttributedString:[[NSMutableAttributedString alloc]
-                                               initWithString:[self.listData.title stringByAppendingString:@"\n"]
-                                               attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:15.0f]}
-                                               ]];
-        
-        [contentString appendAttributedString:[[NSMutableAttributedString alloc]
-                                               initWithString:self.listData.postDateString
-                                               attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14.0f],
-                                                            NSForegroundColorAttributeName : [UIColor lightGrayColor]}
-                                               ]];
+//        [contentString appendAttributedString:[[NSMutableAttributedString alloc]
+//                                               initWithString:[self.listData.title stringByAppendingString:@"\n"]
+//                                               attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:15.0f]}
+//                                               ]];
+//        
+//        [contentString appendAttributedString:[[NSMutableAttributedString alloc]
+//                                               initWithString:self.listData.postDateString
+//                                               attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14.0f],
+//                                                            NSForegroundColorAttributeName : [UIColor lightGrayColor]}
+//                                               ]];
         
         NSLog(@"final text: %@", contentString);
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [UIView beginAnimations:nil context:nil];
+//            [UIView beginAnimations:nil context:nil];
             self.textView.attributedText = contentString;
-            [UIView commitAnimations];
+//            [UIView commitAnimations];
             
             [self.view hideToastActivity];
             //            [self getComments];
@@ -247,6 +256,7 @@ static NSString *const cellIdentifier = @"detailCommentCell";
 
 - (void)getPost {
     [self.view makeToastActivity:CSToastPositionCenter];
+    
     NSMutableAttributedString *contentString = [[NSMutableAttributedString alloc]
                                                 initWithString:[self.listData.title stringByAppendingString:@"\n"]
                                                 attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:15.0f]}
@@ -318,6 +328,7 @@ static NSString *const cellIdentifier = @"detailCommentCell";
                 [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@" \n"]];
             } else if ([element.tagName isEqualToString:@"text"]) {
                 [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:element.content]];
+                [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@" \n"]];
             } else if ([element.tagName isEqualToString:@"a"]) {
                 NSString *srcString = element.firstChild.attributes[@"src"];
                 NSString *childSrcString = [element firstChildWithTagName:@"img"].attributes[@"src"];
@@ -339,8 +350,10 @@ static NSString *const cellIdentifier = @"detailCommentCell";
             } else if ([element.tagName isEqualToString:@"span"]) {
                 if (element.text.length > 0) {
                     [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:element.text]];
+                    [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@" \n"]];
                 } else if (element.content.length > 0) {
                     [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:element.content]];
+                    [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@" \n"]];
                 }
             } else if (element.text.length > 0) {
                 for (TFHppleElement *childElement in element.children) {
@@ -349,15 +362,18 @@ static NSString *const cellIdentifier = @"detailCommentCell";
                     }
                     if ([childElement.tagName isEqualToString:@"text"]) {
                         [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:childElement.content]];
+                        [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@" \n"]];
                     }
                 }
             } else if (element.attributes[@"app_paragraph"] != nil) {
                 if ([((NSString *)element.attributes[@"app_paragraph"]) containsString:@"Dc_App_text"]) {
                     if (element.text.length > 0) {
                         [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:element.text]];
+                        [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@" \n"]];
                     }
                     if (element.content.length > 0) {
                         [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:element.content]];
+                        [contentString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@" \n"]];
                     }
                 }
                 if ([((NSString *)element.attributes[@"app_paragraph"]) containsString:@"Dc_App_Img"]) {
@@ -411,11 +427,9 @@ static NSString *const cellIdentifier = @"detailCommentCell";
         [contentString appendAttributedString:[[NSAttributedString alloc] initWithString:@" "]];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.textView sizeToFit];
             self.textView.attributedText = contentString;
             [self.textView sizeToFit];
-            [self.textView layoutIfNeeded];
-            [self.textView sizeToFit];
+            [self.textView adjustsFontForContentSizeCategory];
             
             [self.view hideToastActivity];
 //            [self getComments];
