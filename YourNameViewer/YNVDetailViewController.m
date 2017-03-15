@@ -67,6 +67,7 @@ static NSString *const cellIdentifier = @"detailCommentCell";
     self.tableView.dataSource = self;
     self.tableView.hidden = YES;
     
+    [self getPostWithOtherLibraryThatNameIsIGHTMLQuery];
 //    [self getPostHtml];
 //    [self getPost];
 }
@@ -78,10 +79,6 @@ static NSString *const cellIdentifier = @"detailCommentCell";
 //    [self getPostHtml];
 //    [self getPost];
     [self.refreshControl endRefreshing];
-}
-
-- (void)viewDidLayoutSubviews {
-    [self getPostWithOtherLibraryThatNameIsIGHTMLQuery];
 }
 
 - (void)getPostWithOtherLibraryThatNameIsIGHTMLQuery {
@@ -122,13 +119,14 @@ static NSString *const cellIdentifier = @"detailCommentCell";
         
         HTMLDocument *document = [HTMLDocument documentWithString:element.html];
         
-        NSLog(@"%@", document.bodyElement.innerHTML);
+        NSLog(@"%@", document.bodyElement);
         
-        [contentString appendAttributedString:[[NSAttributedString alloc] initWithData:[document.bodyElement.innerHTML dataUsingEncoding:NSUTF8StringEncoding]
-                                                                               options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType,
-                                                                                         NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)}
-                                                                    documentAttributes:nil
-                                                                                 error:nil]];
+        [contentString appendAttributedString:[[NSAttributedString alloc]
+                                               initWithData:[document.bodyElement.innerHTML dataUsingEncoding:NSUTF8StringEncoding]
+                                               options:@{NSDocumentTypeDocumentAttribute : NSHTMLTextDocumentType,
+                                                         NSCharacterEncodingDocumentAttribute : @(NSUTF8StringEncoding)}
+                                               documentAttributes:nil
+                                               error:nil]];
         
 //        [contentString appendAttributedString:[[NSMutableAttributedString alloc]
 //                                               initWithString:[self.listData.title stringByAppendingString:@"\n"]
